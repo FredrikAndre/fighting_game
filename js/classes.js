@@ -1,5 +1,12 @@
-class Sprite { // Sprite namned after gaming convention. 
-  constructor({ position, imageSrc, scale = 1, framesMax = 1, offset = {x: 0, y: 0} }) {
+class Sprite {
+  // Sprite namned after gaming convention.
+  constructor({
+    position,
+    imageSrc,
+    scale = 1,
+    framesMax = 1,
+    offset = { x: 0, y: 0 },
+  }) {
     this.position = position // Starting positions for players
     this.width = 50
     this.height = 150
@@ -15,15 +22,15 @@ class Sprite { // Sprite namned after gaming convention.
 
   draw() {
     c.drawImage(
-      this.image, 
+      this.image,
       this.framesCurrent * (this.image.width / this.framesMax), // Crop location on image
       0,
       this.image.width / this.framesMax, // Crop image on width: ;
       this.image.height,
-      this.position.x - this.offset.x, 
-      this.position.y - this.offset.y, 
+      this.position.x - this.offset.x,
+      this.position.y - this.offset.y,
       (this.image.width / this.framesMax) * this.scale, // Actual width of image
-      this.image.height * this.scale 
+      this.image.height * this.scale
     )
   }
 
@@ -36,7 +43,7 @@ class Sprite { // Sprite namned after gaming convention.
       } else {
         this.framesCurrent = 0
       }
-    }   
+    }
   }
 
   update() {
@@ -45,23 +52,22 @@ class Sprite { // Sprite namned after gaming convention.
   }
 }
 
-class Fighter extends Sprite { // Sprite namned after gaming convention. 
-  constructor({ 
-    position, 
-    velocity, 
-    color = 'red', 
-    imageSrc, 
-    scale = 1, 
+class Fighter extends Sprite {
+  // Sprite namned after gaming convention.
+  constructor({
+    position,
+    velocity,
+    color = 'red',
+    imageSrc,
+    scale = 1,
     framesMax = 1,
-    offset = {x: 0, y: 0},
+    offset = { x: 0, y: 0 },
     sprites,
     attackBox = {
-      offset: {
-
-      },
-      width: undefined, 
-      height: undefined
-    }
+      offset: {},
+      width: undefined,
+      height: undefined,
+    },
   }) {
     super({
       position,
@@ -78,7 +84,7 @@ class Fighter extends Sprite { // Sprite namned after gaming convention.
     this.attackBox = {
       position: {
         x: this.position.x,
-        y: this.position.y
+        y: this.position.y,
       },
       offset: attackBox.offset, // So that attackBox always follows player
       width: attackBox.width,
@@ -97,13 +103,11 @@ class Fighter extends Sprite { // Sprite namned after gaming convention.
       sprites[sprite].image = new Image()
       sprites[sprite].image.src = sprites[sprite].imageSrc
     }
-
   }
 
   update() {
     this.draw()
     if (!this.dead) this.animateFrames()
-   
 
     // Attack boxes
     this.attackBox.position.x = this.position.x + this.attackBox.offset.x
@@ -113,7 +117,7 @@ class Fighter extends Sprite { // Sprite namned after gaming convention.
     // c.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
 
     this.position.x += this.velocity.x
-    this.position.y += this.velocity.y 
+    this.position.y += this.velocity.y
 
     if (this.position.y + this.height + this.velocity.y >= canvas.height - 96) {
       this.velocity.y = 0
@@ -122,7 +126,7 @@ class Fighter extends Sprite { // Sprite namned after gaming convention.
       this.velocity.y += gravity
     }
   }
-  
+
   attack() {
     this.switchSprites('attack1')
     this.isAttacking = true
@@ -130,7 +134,7 @@ class Fighter extends Sprite { // Sprite namned after gaming convention.
 
   takeHit() {
     this.health -= 20
-    if ( this.health <= 0) {
+    if (this.health <= 0) {
       this.switchSprites('death')
     } else {
       this.switchSprites('takeHit')
@@ -139,19 +143,25 @@ class Fighter extends Sprite { // Sprite namned after gaming convention.
 
   switchSprites(sprite) {
     // Overriding all animations with death
-    if ( this.image === this.sprites.death.image) {
+    if (this.image === this.sprites.death.image) {
       if (this.framesCurrent === this.sprites.death.framesMax - 1)
-      this.dead = true
+        this.dead = true
       return
     }
 
     // overriding all other animations with the attack animation
-    if ( this.image === this.sprites.attack1.image 
-      && this.framesCurrent < this.sprites.attack1.framesMax - 1) return
+    if (
+      this.image === this.sprites.attack1.image &&
+      this.framesCurrent < this.sprites.attack1.framesMax - 1
+    )
+      return
 
     // overide when fighter gets hit
-    if (this.image === this.sprites.takeHit.image
-      && this.framesCurrent < this.sprites.takeHit.framesMax - 1) return
+    if (
+      this.image === this.sprites.takeHit.image &&
+      this.framesCurrent < this.sprites.takeHit.framesMax - 1
+    )
+      return
 
     switch (sprite) {
       case 'idle':
@@ -159,45 +169,45 @@ class Fighter extends Sprite { // Sprite namned after gaming convention.
           this.image = this.sprites.idle.image
           this.framesMax = this.sprites.idle.framesMax
           this.framesCurrent = 0
-        } 
+        }
         break
       case 'run':
-        if ( this.image !== this.sprites.run.image) {
+        if (this.image !== this.sprites.run.image) {
           this.image = this.sprites.run.image
           this.framesMax = this.sprites.run.framesMax
           this.framesCurrent = 0
         }
         break
-      case 'jump': 
-      if (this.image !== this.sprites.jump.image) {
+      case 'jump':
+        if (this.image !== this.sprites.jump.image) {
           this.image = this.sprites.jump.image
           this.framesMax = this.sprites.jump.framesMax
           this.framesCurrent = 0
         }
         break
       case 'fall':
-      if (this.image !== this.sprites.fall.image) {
+        if (this.image !== this.sprites.fall.image) {
           this.image = this.sprites.fall.image
           this.framesMax = this.sprites.fall.framesMax
           this.framesCurrent = 0
         }
         break
       case 'attack1':
-      if (this.image !== this.sprites.attack1.image) {
+        if (this.image !== this.sprites.attack1.image) {
           this.image = this.sprites.attack1.image
           this.framesMax = this.sprites.attack1.framesMax
           this.framesCurrent = 0
         }
         break
       case 'takeHit':
-      if (this.image !== this.sprites.takeHit.image) {
+        if (this.image !== this.sprites.takeHit.image) {
           this.image = this.sprites.takeHit.image
           this.framesMax = this.sprites.takeHit.framesMax
           this.framesCurrent = 0
         }
         break
       case 'death':
-      if (this.image !== this.sprites.death.image) {
+        if (this.image !== this.sprites.death.image) {
           this.image = this.sprites.death.image
           this.framesMax = this.sprites.death.framesMax
           this.framesCurrent = 0
