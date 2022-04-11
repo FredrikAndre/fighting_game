@@ -182,10 +182,14 @@ const animate = () => {
   enemy.velocity.x = 0
 
   // Player movement
-  if (keys.a.pressed && player.lastKey === 'a') {
+  if (keys.a.pressed && player.lastKey === 'a' && player.position.x > 0) {
     player.velocity.x = -5
     player.switchSprites('run')
-  } else if (keys.d.pressed && player.lastKey === 'd') {
+  } else if (
+    keys.d.pressed &&
+    player.lastKey === 'd' &&
+    player.position.x < canvas.width - player.width
+  ) {
     player.velocity.x = 5
     player.switchSprites('run')
   } else {
@@ -200,10 +204,18 @@ const animate = () => {
   }
 
   // Enemy movement
-  if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft') {
+  if (
+    keys.ArrowLeft.pressed &&
+    enemy.lastKey === 'ArrowLeft' &&
+    enemy.position.x > 0
+  ) {
     enemy.velocity.x = -5
     enemy.switchSprites('run')
-  } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') {
+  } else if (
+    keys.ArrowRight.pressed &&
+    enemy.lastKey === 'ArrowRight' &&
+    enemy.position.x < canvas.width - enemy.width
+  ) {
     enemy.velocity.x = 5
     enemy.switchSprites('run')
   } else {
@@ -226,7 +238,7 @@ const animate = () => {
     player.isAttacking &&
     player.framesCurrent === 4
   ) {
-    enemy.takeHit()
+    enemy.takeHit(20)
     player.isAttacking = false
     gsap.to('#enemyhealth', {
       width: enemy.health + '%',
@@ -247,7 +259,7 @@ const animate = () => {
     enemy.isAttacking &&
     enemy.framesCurrent === 2
   ) {
-    player.takeHit()
+    player.takeHit(10)
     enemy.isAttacking = false
     gsap.to('#playerhealth', {
       width: player.health + '%',
@@ -279,7 +291,9 @@ window.addEventListener('keydown', (event) => {
         player.lastKey = 'a'
         break
       case 'w':
-        player.velocity.y = -20
+        if (player.velocity.y === 0) {
+          player.velocity.y = -22
+        }
         break
       case ' ':
         player.attack()
@@ -298,7 +312,9 @@ window.addEventListener('keydown', (event) => {
         enemy.lastKey = 'ArrowLeft'
         break
       case 'ArrowUp':
-        enemy.velocity.y = -20
+        if (enemy.velocity.y === 0) {
+          enemy.velocity.y = -22
+        }
         break
       case 'ArrowDown':
         enemy.attack()
